@@ -8,8 +8,27 @@ import ICRC1 "./ICRC1";
 import Array "mo:base/Array";
 
 shared ({ caller = _owner }) actor class Token(
-    token_args : ICRC1.TokenInitArgs
+    name : Text,
+    symbol : Text,
 ) : async ICRC1.FullInterface {
+
+    let token_args : ICRC1.TokenInitArgs = {
+        advanced_settings = null;
+        decimals = 18;
+        fee = 1_000;
+        initial_balances = [(
+            {
+                owner = _owner;
+                subaccount = null;
+            },
+            0,
+        )];
+        max_supply = 0;
+        min_burn_amount = 0;
+        minting_account = null;
+        name = name;
+        symbol = symbol;
+    };
 
     stable let token = ICRC1.init({
         token_args with minting_account = Option.get(

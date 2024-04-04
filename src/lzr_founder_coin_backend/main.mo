@@ -8,7 +8,7 @@ import ICRC1 "./ICRC1";
 import Array "mo:base/Array";
 import Token "./Token";
 
-actor Factory {
+shared ({ caller = _owner }) actor class Factory() {
     type Token = Token.Token;
 
     let n = 4;
@@ -17,26 +17,12 @@ actor Factory {
     let cycleShare = ExperimentalCycles.balance() / (n + 1);
 
     // Deposit cycles into this archive canister.
-    public shared ({ caller = _owner }) func new_token() : async Token {
-        let m: ICRC1.TokenInitArgs = {
-            advanced_settings = null;
-            decimals = 18;
-            fee = 1_000;
-            initial_balances = [(
-                {
-                    owner = _owner;
-                    subaccount = null;
-                },
-                0,
-            )];
-            max_supply = 0;
-            min_burn_amount = 0;
-            minting_account = null;
-            name = "Funny Token1";
-            symbol = "FNT-1";
-        };
+    public shared func new_token(
+        name : Text,
+        symbol : Text,
+    ) : async Token {
         ExperimentalCycles.add(cycleShare);
-        let b = await Token.Token(m);
+        let b = await Token.Token(name, symbol);
         return b;
     };
 };
