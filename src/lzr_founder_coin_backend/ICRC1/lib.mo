@@ -72,7 +72,6 @@ module {
             decimals;
             fee;
             minting_account;
-            max_supply;
             initial_balances;
             min_burn_amount;
             advanced_settings;
@@ -82,13 +81,13 @@ module {
         var permitted_drift = 60_000_000_000;
         var transaction_window = 86_400_000_000_000;
 
-        switch(advanced_settings){
-            case(?options) {
+        switch (advanced_settings) {
+            case (?options) {
                 _burned_tokens := options.burned_tokens;
                 permitted_drift := Nat64.toNat(options.permitted_drift);
                 transaction_window := Nat64.toNat(options.transaction_window);
             };
-            case(null) { };
+            case (null) {};
         };
 
         if (not Account.validate(minting_account)) {
@@ -103,7 +102,7 @@ module {
 
             if (not Account.validate(account)) {
                 Debug.trap(
-                    "Invalid Account: Account at index " # debug_show i # " is invalid in 'initial_balances'",
+                    "Invalid Account: Account at index " # debug_show i # " is invalid in 'initial_balances'"
                 );
             };
 
@@ -125,7 +124,6 @@ module {
             symbol = symbol;
             decimals;
             var _fee = fee;
-            max_supply;
             var _minted_tokens = _minted_tokens;
             var _burned_tokens = _burned_tokens;
             min_burn_amount;
@@ -188,11 +186,6 @@ module {
         token._burned_tokens;
     };
 
-    /// Returns the maximum supply of tokens
-    public func max_supply(token : T.TokenData) : T.Balance {
-        token.max_supply;
-    };
-
     /// Returns the account with the permission to mint tokens
     ///
     /// Note: **The minting account can only participate in minting
@@ -238,11 +231,11 @@ module {
         };
 
         let tx_kind = if (from == token.minting_account) {
-            #mint
+            #mint;
         } else if (args.to == token.minting_account) {
-            #burn
+            #burn;
         } else {
-            #transfer
+            #transfer;
         };
 
         let tx_req = Utils.create_transfer_req(args, caller, tx_kind);
@@ -254,17 +247,17 @@ module {
             case (#ok(_)) {};
         };
 
-        let { encoded; amount } = tx_req; 
+        let { encoded; amount } = tx_req;
 
         // process transaction
-        switch(tx_req.kind){
-            case(#mint){
+        switch (tx_req.kind) {
+            case (#mint) {
                 Utils.mint_balance(token, encoded.to, amount);
             };
-            case(#burn){
+            case (#burn) {
                 Utils.burn_balance(token, encoded.from, amount);
             };
-            case(#transfer){
+            case (#transfer) {
                 Utils.transfer_balance(token, tx_req);
 
                 // burn fee
@@ -291,7 +284,7 @@ module {
                 #GenericError {
                     error_code = 401;
                     message = "Unauthorized: Only the minting_account can mint tokens.";
-                },
+                }
             );
         };
 
@@ -343,13 +336,13 @@ module {
         let req_end = req.start + req.length;
         let tx_end = archive.stored_txs + SB.size(transactions);
 
-        var txs_in_canister: [T.Transaction] = [];
-        
+        var txs_in_canister : [T.Transaction] = [];
+
         if (req.start < tx_end and req_end >= archive.stored_txs) {
             first_index := Nat.max(req.start, archive.stored_txs);
             let tx_start_index = (first_index - archive.stored_txs) : Nat;
 
-            txs_in_canister:= SB.slice(transactions, tx_start_index, tx_start_index + req.length);
+            txs_in_canister := SB.slice(transactions, tx_start_index, tx_start_index + req.length);
         };
 
         let archived_range = if (req.start < archive.stored_txs) {
@@ -414,7 +407,7 @@ module {
         };
 
         let res = await archive.canister.append_transactions(
-            SB.toArray(transactions),
+            SB.toArray(transactions)
         );
 
         switch (res) {

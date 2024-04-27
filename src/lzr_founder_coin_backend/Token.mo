@@ -10,6 +10,7 @@ import Array "mo:base/Array";
 shared ({ caller = _owner }) actor class Token(
     name : Text,
     symbol : Text,
+    minting_account : ICRC1.Account,
 ) : async ICRC1.FullInterface {
 
     let token_args : ICRC1.TokenInitArgs = {
@@ -23,7 +24,6 @@ shared ({ caller = _owner }) actor class Token(
             },
             0,
         )];
-        max_supply = 0;
         min_burn_amount = 0;
         minting_account = null;
         name = name;
@@ -33,10 +33,7 @@ shared ({ caller = _owner }) actor class Token(
     stable let token = ICRC1.init({
         token_args with minting_account = Option.get(
             token_args.minting_account,
-            {
-                owner = _owner;
-                subaccount = null;
-            },
+            minting_account,
         );
     });
 
@@ -81,7 +78,17 @@ shared ({ caller = _owner }) actor class Token(
         await* ICRC1.transfer(token, args, caller);
     };
 
-    public shared ({ caller }) func mint(args : ICRC1.Mint) : async ICRC1.TransferResult {
+    public shared ({ caller }) func mint(account : Principal, amount : ICRC1.Balance) : async ICRC1.TransferResult {
+        let to_account : ICRC1.Account = {
+            owner = account;
+            subaccount = null;
+        };
+        let args = {
+            to = to_account;
+            amount = amount;
+            memo = null;
+            created_at_time = null;
+        };
         await* ICRC1.mint(token, args, caller);
     };
 

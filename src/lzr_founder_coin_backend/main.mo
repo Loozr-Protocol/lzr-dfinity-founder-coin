@@ -10,6 +10,10 @@ import Token "./Token";
 
 shared ({ caller = _owner }) actor class Factory() {
     type Token = Token.Token;
+    stable let minting_account : ICRC1.Account = {
+        owner = _owner;
+        subaccount = null;
+    };
 
     let n = 4;
 
@@ -22,7 +26,7 @@ shared ({ caller = _owner }) actor class Factory() {
         symbol : Text,
     ) : async Token {
         ExperimentalCycles.add(cycleShare);
-        let b = await Token.Token(name, symbol);
+        let b = await Token.Token(name, symbol, minting_account);
         return b;
     };
 };

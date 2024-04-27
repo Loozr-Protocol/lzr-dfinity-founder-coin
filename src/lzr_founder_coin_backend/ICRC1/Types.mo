@@ -193,7 +193,6 @@ module {
         decimals : Nat8;
         fee : Balance;
         minting_account : Account;
-        max_supply : Balance;
         initial_balances : [(Account, Balance)];
         min_burn_amount : Balance;
 
@@ -207,7 +206,6 @@ module {
         symbol : Text;
         decimals : Nat8;
         fee : Balance;
-        max_supply : Balance;
         initial_balances : [(Account, Balance)];
         min_burn_amount : Balance;
 
@@ -251,7 +249,6 @@ module {
         var _fee : Balance;
 
         /// The maximum supply of the token
-        max_supply : Balance;
 
         /// The total amount of minted tokens
         var _minted_tokens : Balance;
